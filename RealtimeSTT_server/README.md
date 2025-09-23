@@ -86,11 +86,23 @@ You can configure the server using the following command-line arguments:
 - **Default**: `8011`
 - **Description**: The port number used for the control WebSocket connection. Control connections are used to send and receive commands to the server.
 
+#### `--control_host`
+
+- **Type**: `str`
+- **Default**: `localhost`
+- **Description**: The host/ip the control WebSocket binds to.
+
 #### `-d`, `--data`, `--data_port`
 
 - **Type**: `int`
 - **Default**: `8012`
 - **Description**: The port number used for the data WebSocket connection. Data connections are used to send audio data and receive transcription updates in real time.
+
+#### `--data_host`
+
+- **Type**: `str`
+- **Default**: `localhost`
+- **Description**: The host/ip the data WebSocket binds to.
 
 #### `-w`, `--wake_words`
 

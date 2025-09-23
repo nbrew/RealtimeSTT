@@ -22,7 +22,9 @@ stt-server [OPTIONS]
     - `-l, --lang, --language`: Language code for transcription; default 'en'.
     - `-i, --input-device, --input_device_index`: Audio input device index; default 1.
     - `-c, --control, --control_port`: WebSocket control port; default 8011.
+    - `--control_host`: Host to bind control WebSocket to; default 'localhost'.
     - `-d, --data, --data_port`: WebSocket data port; default 8012.
+    - `--data_host`: Host to bind data WebSocket to; default 'localhost'.
     - `-w, --wake_words`: Wake word(s) to trigger listening; default "".
     - `-D, --debug`: Enable debug logging.
     - `-W, --write`: Save audio to WAV file.
@@ -416,8 +418,14 @@ def parse_arguments():
     parser.add_argument('-c', '--control', '--control_port', type=int, default=8011,
                         help='The port number used for the control WebSocket connection. Control connections are used to send and receive commands to the server. Default is port 8011.')
 
+    parser.add_argument('--control_host', type=str, default='localhost',
+                        help='Use this option to change the host/ip the control WebSocket server binds to. Default is localhost.')
+
     parser.add_argument('-d', '--data', '--data_port', type=int, default=8012,
                         help='The port number used for the data WebSocket connection. Data connections are used to send audio data and receive transcription updates in real time. Default is port 8012.')
+
+    parser.add_argument('--data_host', type=str, default='localhost',
+                        help='Use this option to change the host/ip the data WebSocket server binds to. Default is localhost.')
 
     parser.add_argument('-w', '--wake_words', type=str, default="",
                         help='Specify the wake word(s) that will trigger the server to start listening. For example, setting this to "Jarvis" will make the system start transcribing when it detects the wake word "Jarvis". Default is "Jarvis".')
@@ -857,10 +865,10 @@ async def main_async():
 
     try:
         # Attempt to start control and data servers
-        control_server = await websockets.serve(control_handler, "localhost", args.control)
-        data_server = await websockets.serve(data_handler, "localhost", args.data)
-        print(f"{bcolors.OKGREEN}Control server started on {bcolors.OKBLUE}ws://localhost:{args.control}{bcolors.ENDC}")
-        print(f"{bcolors.OKGREEN}Data server started on {bcolors.OKBLUE}ws://localhost:{args.data}{bcolors.ENDC}")
+        control_server = await websockets.serve(control_handler, args.control_host, args.control)
+        data_server = await websockets.serve(data_handler, args.data_host, args.data)
+        print(f"{bcolors.OKGREEN}Control server started on {bcolors.OKBLUE}ws://{args.control_host}:{args.control}{bcolors.ENDC}")
+        print(f"{bcolors.OKGREEN}Data server started on {bcolors.OKBLUE}ws://{args.data_host}:{args.data}{bcolors.ENDC}")
 
         # Start the broadcast and recorder threads
         broadcast_task = asyncio.create_task(broadcast_audio_messages())
